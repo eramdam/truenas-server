@@ -1,5 +1,4 @@
 import axios from "axios";
-import fs from "fs";
 import env from "./config/env.json";
 
 const instance = axios.create({
@@ -9,30 +8,56 @@ const instance = axios.create({
   }
 });
 
-const cloudSyncVariables = {
-  CLOUD_SYNC_ID: process.env.CLOUD_SYNC_ID,
-  CLOUD_SYNC_DESCRIPTION: process.env.CLOUD_SYNC_DESCRIPTION,
-  CLOUD_SYNC_DIRECTION: process.env.CLOUD_SYNC_DIRECTION
-};
+async function getCloudSync(): Promise<CloudSync> {
+  return await (
+    await instance.get("/cloudsync/id/" + process.argv[2])
+  ).data;
+}
 
-function getLogForCloudSync() {
-  try {
-    return fs
-      .readFileSync(
-        `/mnt/middlewared/jobs/${cloudSyncVariables.CLOUD_SYNC_ID}.log`
-      )
-      .toString();
-  } catch (e) {
-    return "";
-  }
+interface CloudSync {
+  id: number;
+  description: string;
+  direction: string;
+  transfer_mode: string;
+  job: {
+    logs_excerpt: string,
+    progress: {
+      percent: number,
+      description: string,
+      extra: any
+    },
+    time_started: {
+      $date: number
+    },
+    time_finished: {
+      $date: number
+    }
+  };
+}
+
+function makeEmail(cloudSync: CloudSync) {
+  return `
+Job: ${cloudSync.description}
+
+Started: ${new Date(cloudSync.job.time_started.$date).toLocaleString()}
+Finished: ${new Date(cloudSync.job.time_finished.$date).toLocaleString()}
+
+Log: ${cloudSync.job.progress.description}
+
+${cloudSync.job.logs_excerpt}
+  `;
 }
 
 (async () => {
+  const cloudSync = await getCloudSync();
+  const html = makeEmail(cloudSync);
+
   await instance.post("/mail/send", {
     mail_message: {
-      subject: `[Success] Cloud Sync ${cloudSyncVariables.CLOUD_SYNC_DESCRIPTION} (${cloudSyncVariables.CLOUD_SYNC_ID})`,
+      subject: `Cloud Sync ${cloudSync.description}`,
       to: [env.email],
-      text: getLogForCloudSync()
+      text: html,
+      html: null
     }
   });
 })();
