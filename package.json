@@ -1,10 +1,10 @@
 {
   "name": "truenas-notifier",
   "version": "1.0.0",
-  "description": "",
+  "description": "Sends an email through TrueNAS' API when a Cloud Sync is done",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "start": "ts-node index.ts"
   },
   "keywords": [],
   "author": "",
