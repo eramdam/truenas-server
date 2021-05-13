@@ -4,7 +4,8 @@
   "description": "Sends an email through TrueNAS' API when a Cloud Sync is done",
   "main": "index.js",
   "scripts": {
-    "start": "ts-node index.ts"
+    "start": "ts-node index.ts",
+    "build": "tsc -p . && pkg index.js --target host --output truenas-notifier"
   },
   "keywords": [],
   "author": "",
@@ -13,6 +14,7 @@
     "@types/axios": "^0.14.0",
     "@types/node": "^15.0.3",
     "axios": "^0.21.1",
+    "pkg": "^5.1.0",
     "prettier": "^2.3.0",
     "ts-node": "^9.1.1",
     "typescript": "^4.2.4"
