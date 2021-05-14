@@ -14,14 +14,17 @@ export function mountServer() {
     try {
       const id = Number(req.params.id);
       const sync = await getCloudSync(id);
+      console.log(sync);
 
       const emailText = makeEmailForCloudSync(sync);
+      console.log(emailText);
 
       await sendEmail({
         description: sync.description,
         text: emailText
       });
 
+      console.log("Email sent to " + env.email);
       res.send("Email sent to " + env.email);
     } catch (e) {
       res.status(500).send(String(e));
