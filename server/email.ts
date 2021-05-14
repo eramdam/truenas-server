@@ -14,7 +14,8 @@ export function makeEmailForCloudSync(cloudSync: CloudSync) {
       ).toLocaleString()}\n`) ||
       "Finished: In progress...",
     cloudSync.job && `Log: ${cloudSync.job.progress.description}\n`,
-    cloudSync.job?.logs_excerpt && `${cloudSync.job.logs_excerpt}`
+    cloudSync.job?.logs_excerpt && `${cloudSync.job.logs_excerpt}`,
+    `Date/Time: ${new Date().toLocaleString()}`
   ])
     .compact()
     .join("\n")
