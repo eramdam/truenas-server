@@ -1,6 +1,7 @@
 import express from "express";
 import env from "../config/env.json";
 import { makeEmailForCloudSync } from "./email";
+import { delayAsync } from "./helpers";
 import { getCloudSync, sendEmail } from "./trueNasApi";
 
 export function mountServer() {
@@ -12,7 +13,10 @@ export function mountServer() {
 
   app.get("/cloud_sync/notify/:id", async (req, res) => {
     try {
+      console.log("Waiting 2 secondes...");
+      await delayAsync(2000);
       const id = Number(req.params.id);
+      console.log("Getting cloud sync with id ", id);
       const sync = await getCloudSync(id);
       console.log(sync);
 
