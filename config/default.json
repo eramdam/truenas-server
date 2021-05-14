@@ -1,5 +1,6 @@
 {
   "host": "",
   "apiKey": "",
-  "email": ""
+  "email": "",
+  "port": 3000
 }
