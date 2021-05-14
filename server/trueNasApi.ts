@@ -1,6 +1,30 @@
 import axios from "axios";
 import env from "../config/env.json";
-import { CloudSync } from "./cloudSyncTypes";
+
+export interface CoreJob {
+  id: number;
+  method: "string";
+  logs_excerpt: string;
+  progress: {
+    percent: number,
+    description: string,
+    extra: any
+  };
+  time_started: {
+    $date: number
+  };
+  time_finished?: {
+    $date: number
+  };
+}
+
+export interface CloudSync {
+  id: number;
+  description: string;
+  direction: string;
+  transfer_mode: string;
+  job?: CoreJob;
+}
 
 const instance = axios.create({
   baseURL: `http://${env.host}/api/v2.0/`,
@@ -27,4 +51,10 @@ export async function sendEmail(options: {
       html: null
     }
   });
+}
+
+export async function getJob(id: number) {
+  const jobs: CoreJob[] = await (await instance.get("/core/get_jobs")).data;
+
+  return jobs.find(job => job.id === id);
 }
