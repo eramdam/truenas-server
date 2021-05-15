@@ -12,6 +12,7 @@ export function mountServer() {
   });
 
   app.get("/cloud_sync/notify/:id", async (req, res) => {
+    res.send("Email will be sent to " + env.email);
     try {
       console.log("Waiting 2 secondes...");
       await delayAsync(2000);
@@ -39,7 +40,6 @@ export function mountServer() {
       });
 
       console.log("Email sent to " + env.email);
-      res.send("Email sent to " + env.email);
     } catch (e) {
       res.status(500).send(String(e));
     }
