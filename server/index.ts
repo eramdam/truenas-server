@@ -1,7 +1,6 @@
 import express from "express";
 import env from "../config/env.json";
 import { makeEmailForCloudSync } from "./email";
-import { delayAsync } from "./helpers";
 import { getCloudSync, getJob, sendEmail } from "./trueNasApi";
 
 export function mountServer() {
@@ -12,12 +11,12 @@ export function mountServer() {
   });
 
   app.get("/cloud_sync/notify/:id", async (req, res) => {
+    // Return a response early so TrueNAS considers the job done.
     res.send("Email will be sent to " + env.email);
     try {
-      console.log("Waiting 2 secondes...");
-      await delayAsync(2000);
       const id = Number(req.params.id);
       console.log("Getting cloud sync with id ", id);
+      // Fetch the cloud sync
       const sync = await getCloudSync(id);
       console.log(sync);
 
@@ -25,15 +24,18 @@ export function mountServer() {
         throw new Error("No job for this sync");
       }
 
+      // Find the corresponding job
       const job = await getJob(sync.job?.id);
 
       if (!job) {
         throw new Error("No job for this sync");
       }
 
+      // Generate the email text
       const emailText = makeEmailForCloudSync(sync, job);
       console.log(emailText);
 
+      // Send it
       await sendEmail({
         description: sync.description,
         text: emailText
