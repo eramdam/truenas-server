@@ -45,7 +45,7 @@ export async function sendEmail(options: {
 }) {
   return await instance.post("/mail/send", {
     mail_message: {
-      subject: `Cloud Sync ${options.description}`,
+      subject: options.description,
       to: [env.email],
       text: options.text,
       html: null

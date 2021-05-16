@@ -1,18 +1,19 @@
 import _ from "lodash";
-import { CloudSync, CoreJob } from "./trueNasApi";
+import { CloudSync } from "./trueNasApi";
 
-export function makeEmailForCloudSync(cloudSync: CloudSync, job: CoreJob) {
+export function makeEmailForCloudSync(cloudSync: CloudSync) {
   return _([
     `Job: ${cloudSync.description}\n`,
-    job &&
-      `Started: ${new Date(job.time_started?.$date || 0).toLocaleString()}`,
-    (job.time_finished &&
+    cloudSync.job &&
+      `Started: ${new Date(
+        cloudSync.job.time_started?.$date || 0
+      ).toLocaleString()}`,
+    cloudSync.job?.time_finished?.$date &&
       `Finished: ${new Date(
-        job.time_finished?.$date || 0
-      ).toLocaleString()}\n`) ||
-      "Finished: In progress...",
-    job && `Log: ${job.progress.description}\n`,
-    job.logs_excerpt && `${job.logs_excerpt}`,
+        cloudSync.job.time_finished?.$date
+      ).toLocaleString()}\n`,
+    cloudSync.job && `Log: ${cloudSync.job.progress.description}\n`,
+    cloudSync.job?.logs_excerpt && `${cloudSync.job.logs_excerpt}`,
     `Date/Time: ${new Date().toLocaleString()}`
   ])
     .compact()

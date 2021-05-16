@@ -24,20 +24,17 @@ export function mountServer() {
         throw new Error("No job for this sync");
       }
 
-      // Find the corresponding job
-      const job = await getJob(sync.job?.id);
-
-      if (!job) {
-        throw new Error("No job for this sync");
-      }
-
       // Generate the email text
-      const emailText = makeEmailForCloudSync(sync, job);
+      const emailText = makeEmailForCloudSync(sync);
       console.log(emailText);
+
+      const isFinished = Boolean(sync.job?.time_finished?.$date);
 
       // Send it
       await sendEmail({
-        description: sync.description,
+        description: isFinished
+          ? `Finished ${sync.description}`
+          : `Started ${sync.description}`,
         text: emailText
       });
 
