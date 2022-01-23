@@ -40,7 +40,8 @@ export function mountServer() {
 
       console.log("Email sent to " + env.email);
     } catch (e) {
-      res.status(500).send(String(e));
+      console.error(e);
+      res.sendStatus(500);
     }
   });
 
